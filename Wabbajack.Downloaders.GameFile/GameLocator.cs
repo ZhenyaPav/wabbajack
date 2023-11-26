@@ -21,6 +21,8 @@ public class GameLocator : IGameLocator
     private readonly EGSHandler? _egs;
     private readonly OriginHandler? _origin;
 
+    private readonly Dictionary<Game, AbsolutePath> _piratedGames = new();
+
     private readonly Dictionary<AppId, AbsolutePath> _steamGames = new();
     private readonly Dictionary<GOGGameId, AbsolutePath> _gogGames = new();
     private readonly Dictionary<EGSGameId, AbsolutePath> _egsGames = new();
@@ -160,6 +162,11 @@ public class GameLocator : IGameLocator
 
     private bool TryFindLocationInner(Game game, out AbsolutePath path)
     {
+        if(_piratedGames.TryGetValue(game, out var piratedGamePath)){
+            path = piratedGamePath;
+            return true;
+        }
+
         var metaData = game.MetaData();
 
         foreach (var id in metaData.SteamIDs)
